@@ -354,6 +354,31 @@ th {
   font-size: 12px;
 }
 
+.form-notice {
+  grid-column: 1 / -1;
+  border: 1px solid #cfd9dd;
+  border-radius: 6px;
+  background: #fff;
+  color: #506069;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.form-notice.error {
+  border-color: #f0b4ad;
+  background: #fff6f5;
+  color: #9b3228;
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 a {
   color: #1472a6;
 }

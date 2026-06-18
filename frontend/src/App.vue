@@ -96,6 +96,11 @@ async function createTracking(payload) {
   }
 }
 
+function onTrackingCreated() {
+  error.value = ''
+  loadAll()
+}
+
 onMounted(loadAll)
 </script>
 
@@ -139,7 +144,7 @@ onMounted(loadAll)
       v-else
       :faults="state.faults"
       :logs="state.tracking"
-      @create="createTracking"
+      @created="onTrackingCreated"
     />
   </AppShell>
 </template>

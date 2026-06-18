@@ -10,8 +10,23 @@ async function request(path, options = {}) {
   })
 
   if (!response.ok) {
-    const text = await response.text()
-    throw new Error(text || `Request failed: ${response.status}`)
+    let message = `Request failed: ${response.status}`
+    try {
+      const data = await response.json()
+      if (data.error) {
+        message = data.error
+      } else if (data.message) {
+        message = data.message
+      } else if (typeof data === 'string' && data) {
+        message = data
+      }
+    } catch {
+      const text = await response.text()
+      if (text) {
+        message = text
+      }
+    }
+    throw new Error(message)
   }
 
   return response.json()
