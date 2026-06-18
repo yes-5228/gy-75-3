@@ -40,9 +40,9 @@ MAX_COST = 1_000_000
 def create_tracking_log(payload):
     cost = float(payload.get("cost", 0) or 0)
     if cost < 0:
-        raise ValueError("Cost must not be negative")
+        raise ValueError("费用不能为负数")
     if cost > MAX_COST:
-        raise ValueError(f"Cost exceeds the maximum allowed value ({MAX_COST:,.0f})")
+        raise ValueError(f"费用超过最大允许值（{MAX_COST:,.0f}）")
     fault = FaultReport.query.get_or_404(payload["faultId"])
     log = RepairTracking(
         action=payload["action"],

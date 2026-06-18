@@ -34,6 +34,23 @@ const costError = computed(() => {
   return ''
 })
 
+const ERROR_MAP = {
+  'Cost must not be negative': '费用不能为负数',
+  'Cost exceeds the maximum allowed value': '费用超过最大允许值',
+}
+
+function translateError(msg) {
+  if (!msg) return ''
+  for (const [en, zh] of Object.entries(ERROR_MAP)) {
+    if (msg.includes(en)) {
+      const match = msg.match(/\(([\d,]+)\)/)
+      if (match) return `${zh}（${match[1]}）`
+      return zh
+    }
+  }
+  return msg
+}
+
 function resetForm() {
   Object.assign(form, {
     faultId: '',
@@ -44,9 +61,13 @@ function resetForm() {
   })
 }
 
-async function submit() {
-  if (costError.value) return
+function clearErrors() {
   submitError.value = ''
+}
+
+async function submit() {
+  clearErrors()
+  if (costError.value) return
   submitting.value = true
   try {
     await repairApi.createTracking({
@@ -57,7 +78,7 @@ async function submit() {
     resetForm()
     emit('created')
   } catch (err) {
-    submitError.value = err.message || '提交失败，请稍后重试'
+    submitError.value = translateError(err.message) || '提交失败，请稍后重试'
   } finally {
     submitting.value = false
   }
