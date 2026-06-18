@@ -43,7 +43,9 @@ def create_tracking_log(payload):
         raise ValueError("费用不能为负数")
     if cost > MAX_COST:
         raise ValueError(f"费用超过最大允许值（{MAX_COST:,.0f}）")
-    fault = FaultReport.query.get_or_404(payload["faultId"])
+    fault = FaultReport.query.get(payload["faultId"])
+    if not fault:
+        raise ValueError("找不到对应的故障记录")
     log = RepairTracking(
         action=payload["action"],
         handler=payload["handler"],
