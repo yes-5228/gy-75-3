@@ -349,6 +349,11 @@ th {
   color: #9b3228;
 }
 
+.field-error {
+  color: #9b3228;
+  font-size: 12px;
+}
+
 a {
   color: #1472a6;
 }

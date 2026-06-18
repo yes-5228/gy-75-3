@@ -34,15 +34,23 @@ def list_tracking_logs(fault_id=None):
     return [item.to_dict() for item in query.all()]
 
 
+MAX_COST = 1_000_000
+
+
 def create_tracking_log(payload):
+    cost = float(payload.get("cost", 0) or 0)
+    if cost < 0:
+        raise ValueError("Cost must not be negative")
+    if cost > MAX_COST:
+        raise ValueError(f"Cost exceeds the maximum allowed value ({MAX_COST:,.0f})")
+    fault = FaultReport.query.get_or_404(payload["faultId"])
     log = RepairTracking(
         action=payload["action"],
         handler=payload["handler"],
         status=payload["status"],
-        cost=float(payload.get("cost", 0) or 0),
+        cost=cost,
         fault_id=payload["faultId"],
     )
-    fault = FaultReport.query.get_or_404(payload["faultId"])
     fault.status = payload["status"]
     db.session.add(log)
     db.session.commit()

@@ -88,8 +88,12 @@ async function createFault(payload) {
 }
 
 async function createTracking(payload) {
-  await repairApi.createTracking(payload)
-  await loadAll()
+  try {
+    await repairApi.createTracking(payload)
+    await loadAll()
+  } catch (err) {
+    error.value = err.message
+  }
 }
 
 onMounted(loadAll)

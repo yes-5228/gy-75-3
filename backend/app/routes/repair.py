@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, jsonify, request
 
 from app.services.repair_service import (
     create_fault,
@@ -29,7 +29,10 @@ def tracking():
 
 @bp.post("/tracking")
 def add_tracking():
-    return create_tracking_log(request.get_json() or {}), 201
+    try:
+        return create_tracking_log(request.get_json() or {}), 201
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
 
 
 @bp.get("/statistics")

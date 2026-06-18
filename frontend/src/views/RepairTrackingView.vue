@@ -1,5 +1,5 @@
 ﻿<script setup>
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { ListPlus } from 'lucide-vue-next'
 import DataTable from '../components/DataTable.vue'
 import SectionHeader from '../components/SectionHeader.vue'
@@ -12,6 +12,8 @@ defineProps({
 
 const emit = defineEmits(['create'])
 
+const MAX_COST = 1_000_000
+
 const form = reactive({
   faultId: '',
   action: '',
@@ -20,7 +22,16 @@ const form = reactive({
   cost: 0,
 })
 
+const costError = computed(() => {
+  const v = Number(form.cost)
+  if (isNaN(v)) return 'Please enter a valid number'
+  if (v < 0) return 'Cost must not be negative'
+  if (v > MAX_COST) return `Cost must not exceed ${MAX_COST.toLocaleString()}`
+  return ''
+})
+
 function submit() {
+  if (costError.value) return
   emit('create', { ...form, faultId: Number(form.faultId), cost: Number(form.cost) })
   Object.assign(form, { faultId: '', action: '', handler: '', status: 'In Progress', cost: 0 })
 }
@@ -55,13 +66,14 @@ function submit() {
         </label>
         <label>
           <span>Cost</span>
-          <input v-model.number="form.cost" type="number" min="0" step="0.01" />
+          <input v-model.number="form.cost" type="number" min="0" step="0.01" :max="MAX_COST" />
+          <span v-if="costError" class="field-error">{{ costError }}</span>
         </label>
         <label class="wide">
           <span>Action log</span>
           <textarea v-model="form.action" required rows="3" placeholder="Arrival, diagnosis, replacement, and review notes"></textarea>
         </label>
-        <button class="primary-action" type="submit">
+        <button class="primary-action" type="submit" :disabled="!!costError">
           <ListPlus :size="17" />
           <span>Add Tracking</span>
         </button>
